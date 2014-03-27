@@ -19,12 +19,14 @@ public class Simulator implements Runnable {
         int count = 0;
         Process p;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		out.println("Enter the burst time of the processes : ");
         while(count != minProcess) {
             rbt.add(new Process(Integer.parseInt(br.readLine())));
             count++;
         }
     }
 
+	// Just for testing purpose. Suit this to yourself
     private void insertPredefinedValues() {
         rbt.add(new Process(8));
         rbt.add(new Process(9));
