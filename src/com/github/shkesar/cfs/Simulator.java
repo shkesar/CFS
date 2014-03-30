@@ -14,10 +14,6 @@ public class Simulator extends Thread {
 
     private ArrayList<Process> processes;
 
-    private int QUANTUM_NUMBER = 4;
-
-    private int numCores = 2;
-
     public Simulator() {
         // Makes a default processor @see Processor
         this(0, 0);
