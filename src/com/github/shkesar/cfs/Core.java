@@ -4,10 +4,12 @@ import static java.lang.System.out;
 
 public class Core extends Thread {
 
+    // For holding the processes according to their total time spent
     private RBTree rbt;
 
     private Processor processor;
 
+    // Sum of current burst time of individual processes inside rbt
     private int totalBurstTime = 0;
 
     public Core(Processor processor) {
@@ -41,13 +43,18 @@ public class Core extends Thread {
             int QUANTUM_NUMBER = processor.getQuantum_number();
 
             out.println(this.toString() + p + " active");
+
+            // the time that a process will further spend
             int timeToSpend = (p.getBurstTime() > QUANTUM_NUMBER) ? QUANTUM_NUMBER : (p.getBurstTime());
+
+            // The process runs, ain't it?
             try {
                 Thread.sleep(timeToSpend * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+            // Keeping the total burst time of core updates
             totalBurstTime -= timeToSpend;
 
             if(p.getBurstTime() > QUANTUM_NUMBER) {

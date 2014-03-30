@@ -2,9 +2,18 @@
 package com.github.shkesar.cfs;
 
 public class Process implements Comparable<Process> {
+
+    // IDs provided to each created instance of process, i.e, suffix of the process name
     static private char JOB_ID = 'A';
+
+    // Process name
     private String name;
+
+    // Total time spend active with the processor
+    // Used to actually sort the processes by the algorithm
     private int elapsedProcessorTime = 0;
+
+    // The total time left to consume of processor
     private int burstTime;
 
     public static String genProcessName() {
@@ -50,8 +59,8 @@ public class Process implements Comparable<Process> {
 
     @Override
     public int compareTo(Process process) {
-        return -(process.elapsedProcessorTime+process.getName().hashCode()) +
-                (this.elapsedProcessorTime+this.getName().hashCode());
+        return -(process.elapsedProcessorTime + process.getName().hashCode()) +
+                (this.elapsedProcessorTime + this.getName().hashCode());
     }
 
     @Override

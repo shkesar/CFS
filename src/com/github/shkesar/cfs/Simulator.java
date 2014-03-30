@@ -12,6 +12,7 @@ public class Simulator extends Thread {
     // Process containing multiple cores
     private Processor processor;
 
+    // Just a temporary set of processes
     private ArrayList<Process> processes;
 
     public Simulator() {
@@ -24,6 +25,7 @@ public class Simulator extends Thread {
         processor = new Processor(quantumNumber, size);
     }
 
+    // Inputs processes from user - Only burst time is required from user
     public void getUserInput(int minProcess) throws IOException {
         int count = 0;
         Process p;

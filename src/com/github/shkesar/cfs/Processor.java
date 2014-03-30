@@ -6,10 +6,12 @@ import java.util.Comparator;
 
 public class Processor {
 
+    // Default Quantum Number : the number of seconds that a single task executes
     private int quantum_number = 4;
-    // Number of cores
+    // Default number of cores
     private int size = 2;
 
+    // Collection of cores in a processor
     private ArrayList<Core> cores;
 
     public Processor() {
@@ -35,10 +37,13 @@ public class Processor {
             add(process);
     }
 
+    /*Inserts a process into a core based on some parameter
+    which is currently the total burst time of the processes*/
     public void add(Process p) {
         Core lessUsedCore = getLessUsedCore();
         lessUsedCore.add(p);
     }
+
 
     private Core getLessUsedCore() {
         if(cores.size() > 1) {
@@ -52,6 +57,7 @@ public class Processor {
         return cores.get(0);
     }
 
+    // Integer ID attached to a core
     public int getID(Core core) {
         return cores.indexOf(core);
     }
