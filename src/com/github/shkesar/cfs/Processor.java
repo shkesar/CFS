@@ -3,6 +3,7 @@ package com.github.shkesar.cfs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Processor
 {
@@ -15,10 +16,7 @@ public class Processor
 
     cores = new ArrayList<>(numberOfCores);
 
-    for (int i = 0; i < numberOfCores; i++)
-    {
-      cores.add(new Core(this));
-    }
+    IntStream.range(0, numberOfCores).forEach(n -> cores.add(new Core(this)));
   }
 
   public void queueProcesses(List<Process> processes)
