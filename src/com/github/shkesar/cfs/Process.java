@@ -1,71 +1,60 @@
-
 package com.github.shkesar.cfs;
 
-public class Process implements Comparable<Process> {
+public class Process implements Comparable<Process>
+{
+  private static char PROCESS_ID = 'A';
 
-    // IDs provided to each created instance of process, i.e, suffix of the process name
-    static private char JOB_ID = 'A';
+  private String name;
+  private int elapsedProcessTime;
+  private int burstTime;
 
-    // Process name
-    private String name;
+  public static String generateProcessName()
+  {
+    return String.valueOf(PROCESS_ID++);
+  }
 
-    // Total time spend active with the processor
-    // Used to actually sort the processes by the algorithm
-    private int elapsedProcessorTime = 0;
+  public Process(int burstTime)
+  {
+    this(generateProcessName(), burstTime);
+  }
 
-    // The total time left to consume of processor
-    private int burstTime;
+  public Process(String name, int burstTime)
+  {
+    this.name = name;
+    this.burstTime = burstTime;
+  }
 
-    public static String genProcessName() {
-        return "Job " + JOB_ID++;
-    }
+  public int getElapsedProcessTime()
+  {
+    return elapsedProcessTime;
+  }
 
-    public Process(String name, int burstTime) {
-        this.name = name;
-        this.burstTime = burstTime;
-    }
+  public void setElapsedProcessTime(int elapsedProcessTime)
+  {
+    this.elapsedProcessTime = elapsedProcessTime;
+  }
 
-    public Process(int burstTime) {
-        this(genProcessName(), burstTime);
-    }
+  public int getBurstTime()
+  {
+    return burstTime;
+  }
 
-    public Process() {
-        this(genProcessName(), 0);
-    }
+  public void setBurstTime(int burstTime)
+  {
+    this.burstTime = burstTime;
+  }
 
-    public String getName() {
-        return name;
-    }
+  @Override
+  public int compareTo(Process process)
+  {
+    return elapsedProcessTime + name.hashCode() -
+      process.elapsedProcessTime - process.name.hashCode();
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getElapsedProcessorTime() {
-        return elapsedProcessorTime;
-    }
-
-    public void setElapsedProcessorTime(int elapsedProcessorTime) {
-        this.elapsedProcessorTime = elapsedProcessorTime;
-    }
-
-    public int getBurstTime() {
-        return burstTime;
-    }
-
-    public void setBurstTime(int burstTime) {
-        this.burstTime = burstTime;
-    }
-
-    @Override
-    public int compareTo(Process process) {
-        return -(process.elapsedProcessorTime + process.getName().hashCode()) +
-                (this.elapsedProcessorTime + this.getName().hashCode());
-    }
-
-    @Override
-    public String toString() {
-        return this.name + " - \tCurrent Burst time : " + this.burstTime +
-                "\tProcessor elapsed time : " + this.elapsedProcessorTime;
-    }
+  @Override
+  public String toString()
+  {
+    return "[Process: " + name + ", Burst Time: " + burstTime +
+      ", Elapsed Process Time: " + elapsedProcessTime + "]";
+  }
 }

@@ -1,70 +1,73 @@
-
 package com.github.shkesar.cfs;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static java.lang.System.out;
+public class Simulator
+{
+  private Processor processor;
 
-public class Simulator extends Thread {
-    // Process containing multiple cores
-    private Processor processor;
+  public Simulator(int quantumNumber, int size)
+  {
+    processor = new Processor(quantumNumber, size);
+  }
 
-    // Just a temporary set of processes
-    private ArrayList<Process> processes;
+  private void start()
+  {
+    ExecutorService service = Executors.newFixedThreadPool(processor.getNumberOfCores());
+    processor.getCores().stream().forEach(service::execute);
+    service.shutdown();
+  }
 
-    public Simulator() {
-        // Makes a default processor @see Processor
-        this(0, 0);
+  private void getBurstTimeOfProcessesFromUser()
+  {
+    List<Process> processes = new ArrayList<>();
+    try (Scanner scanner = new Scanner(System.in))
+    {
+      System.out.print("Enter burst times of any number of processes separated by space: ");
+
+      processInput(processes, scanner.nextLine());
+
+      processor.queueProcesses(processes);
+    }
+  }
+
+  private void processInput(List<Process> processes, String line)
+  {
+    try (Scanner scanner = new Scanner(line))
+    {
+      while (scanner.hasNextInt())
+      {
+        processes.add(new Process(scanner.nextInt()));
+      }
+    }
+  }
+
+  /*
+  private void addTestProcesses()
+  {
+    List<Process> processes = new ArrayList<>();
+    Random random = new Random(System.currentTimeMillis());
+
+    for (int i = 0; i < 5; i++)
+    {
+      processes.add(new Process(random.nextInt(10) + 1));
     }
 
-    public Simulator(int quantumNumber, int size) {
-        processes = new ArrayList<Process>();
-        processor = new Processor(quantumNumber, size);
-    }
+    processor.queueProcesses(processes);
+  }
+  */
 
-    // Inputs processes from user - Only burst time is required from user
-    public void getUserInput(int minProcess) throws IOException {
-        int count = 0;
-        Process p;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		out.println("Enter the burst time of the processes : ");
-        while(count != minProcess) {
-            processes.add(new Process(Integer.parseInt(br.readLine())));
-            count++;
-        }
+  public static void main(String args[])
+  {
+    Simulator simulator = new Simulator(4, 2);
 
-        processor.insertProcesses(processes);
-    }
+    simulator.getBurstTimeOfProcessesFromUser();
+    //simulator.addTestProcesses();
 
-	// Just for testing purpose. Suit this to yourself
-    private void insertPredefinedValues() {
-        processes.add(new Process(8));
-        processes.add(new Process(9));
-        processes.add(new Process(7));
-        processes.add(new Process(5));
-        processes.add(new Process(11));
-
-        processor.insertProcesses(processes);
-    }
-
-    @Override
-    public void start() {
-        run();
-    }
-
-    @Override
-    public void run() {
-        for(Core core : processor.getCores())
-            new Thread(core).start();
-    }
-
-    public static void main(String args[]) throws IOException {
-        Simulator sim = new Simulator();
-        //sim.getUserInput(6);
-        sim.insertPredefinedValues();
-        sim.start();
-    }
+    simulator.start();
+  }
 }
