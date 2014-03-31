@@ -39,27 +39,28 @@ public class Core implements Runnable
       final Process process = processes.pollFirst();
       final int quantumNumber = processor.getQuantumNumber();
 
-      System.out.println(toString() + process + " Active");
+      printProcessInformation(process, "Active");
 
       int timeToSpend = (process.getBurstTime() > quantumNumber) ? quantumNumber : process.getBurstTime();
-      runProcess(timeToSpend);
 
-      totalBurstTime -= timeToSpend;
-
-      process.setElapsedProcessTime(process.getElapsedProcessTime() + timeToSpend);
-      process.setBurstTime(process.getBurstTime() - timeToSpend);
+      runProcess(process, timeToSpend);
 
       if (process.getBurstTime() > quantumNumber)
       {
         processes.add(process);
       }
 
-      System.out.println(toString() + process + " Deactive");
+      printProcessInformation(process, "Deactive");
     }
   }
 
+  private void printProcessInformation(Process process, String state)
+  {
+    System.out.println(toString() + process + " [" + state + "]");
+  }
+
   // The process runs, ain't it?
-  private void runProcess(int timeToSpend)
+  private void runProcess(Process process, int timeToSpend)
   {
     try
     {
@@ -69,6 +70,11 @@ public class Core implements Runnable
     {
       e.printStackTrace();
     }
+
+    totalBurstTime -= timeToSpend;
+
+    process.setElapsedProcessTime(process.getElapsedProcessTime() + timeToSpend);
+    process.setBurstTime(process.getBurstTime() - timeToSpend);
   }
 
   @Override
