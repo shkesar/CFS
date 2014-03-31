@@ -1,78 +1,85 @@
 package com.github.shkesar.cfs;
 
-import static java.lang.System.out;
+import java.util.TreeSet;
 
-public class Core extends Thread {
+public class Core implements Runnable
+{
+  private TreeSet<Process> processes;
+  private Processor processor;
+  private int totalBurstTime;
 
-    // For holding the processes according to their total time spent
-    private RBTree rbt;
+  public Core(Processor processor)
+  {
+    this.processor = processor;
+    processes = new TreeSet<>();
+  }
 
-    private Processor processor;
+  public void add(Process process)
+  {
+    totalBurstTime += process.getBurstTime();
+    processes.add(process);
+  }
 
-    // Sum of current burst time of individual processes inside rbt
-    private int totalBurstTime = 0;
+  public void remove(Process process)
+  {
+    totalBurstTime -= process.getBurstTime();
+    processes.remove(process);
+  }
 
-    public Core(Processor processor) {
-        this.processor = processor;
-        this.rbt = new RBTree();
+  public int getTotalBurstTime()
+  {
+    return totalBurstTime;
+  }
+
+  @Override
+  public void run()
+  {
+    while (!processes.isEmpty())
+    {
+      final Process process = processes.pollFirst();
+      final int quantumNumber = processor.getQuantumNumber();
+
+      printProcessInformation(process, "Active");
+
+      int timeToSpend = (process.getBurstTime() > quantumNumber) ? quantumNumber : process.getBurstTime();
+
+      runProcess(process, timeToSpend);
+
+      if (process.getBurstTime() > quantumNumber)
+      {
+        processes.add(process);
+      }
+
+      printProcessInformation(process, "Deactive");
+    }
+  }
+
+  private void printProcessInformation(Process process, String state)
+  {
+    System.out.println(toString() + process + " [" + state + "]");
+  }
+
+  // The process runs, ain't it?
+  private void runProcess(Process process, int timeToSpend)
+  {
+    try
+    {
+      Thread.sleep(timeToSpend);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
     }
 
-    public void add(Process process) {
-        totalBurstTime += process.getBurstTime();
-        rbt.add(process);
-    }
+    totalBurstTime -= timeToSpend;
 
-    public void remove(Process process) {
-        totalBurstTime -= process.getBurstTime();
-        rbt.remove(process);
-    }
+    process.setElapsedProcessTime(process.getElapsedProcessTime() + timeToSpend);
+    process.setBurstTime(process.getBurstTime() - timeToSpend);
+  }
 
-    public int getTotalBurstTime() {
-        return totalBurstTime;
-    }
-
-    @Override
-    public void start() {
-        run();
-    }
-
-    @Override
-    public void run() {
-        while(!rbt.isEmpty()) {
-            Process p = rbt.pollFirst();
-            int QUANTUM_NUMBER = processor.getQuantum_number();
-
-            out.println(this.toString() + p + " active");
-
-            // the time that a process will further spend
-            int timeToSpend = (p.getBurstTime() > QUANTUM_NUMBER) ? QUANTUM_NUMBER : (p.getBurstTime());
-
-            // The process runs, ain't it?
-            try {
-                Thread.sleep(timeToSpend * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Keeping the total burst time of core updates
-            totalBurstTime -= timeToSpend;
-
-            if(p.getBurstTime() > QUANTUM_NUMBER) {
-                p.setElapsedProcessorTime(p.getElapsedProcessorTime()+timeToSpend);
-                p.setBurstTime(p.getBurstTime() - timeToSpend);
-                rbt.add(p);
-            }
-            else {
-                p.setElapsedProcessorTime(p.getElapsedProcessorTime()+timeToSpend);
-                p.setBurstTime(p.getBurstTime() - timeToSpend);
-            }
-
-            out.println(this.toString() + p + " deactive \n");
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Core " + processor.getID(this) + " ";
-    }
+  @Override
+  public String toString()
+  {
+    return "[Core: " + processor.getCoreID(this) + "]";
+  }
 }
