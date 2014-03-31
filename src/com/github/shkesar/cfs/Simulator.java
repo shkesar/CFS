@@ -27,7 +27,8 @@ public class Simulator
     List<Process> processes = new ArrayList<>();
     try (Scanner scanner = new Scanner(System.in))
     {
-      System.out.print("Enter burst times of any number of processes separated by space: ");
+      System.out.print("Enter burst times in milliseconds " +
+        "of any number of processes separated by space: ");
 
       processInput(processes, scanner.nextLine());
 
@@ -54,7 +55,7 @@ public class Simulator
 
     for (int i = 0; i < 5; i++)
     {
-      processes.add(new Process(random.nextInt(10) + 1));
+      processes.add(new Process(random.nextInt(1000) + 1));
     }
 
     processor.queueProcesses(processes);
@@ -63,7 +64,7 @@ public class Simulator
 
   public static void main(String args[])
   {
-    Simulator simulator = new Simulator(4, 2);
+    Simulator simulator = new Simulator(4000, 2);
 
     simulator.getBurstTimeOfProcessesFromUser();
     //simulator.addTestProcesses();

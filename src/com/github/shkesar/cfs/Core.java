@@ -63,7 +63,7 @@ public class Core implements Runnable
   {
     try
     {
-      Thread.sleep(timeToSpend * 1000);
+      Thread.sleep(timeToSpend);
     }
     catch (InterruptedException e)
     {
